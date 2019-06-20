@@ -90,3 +90,24 @@ The output object will always contain all encoded formats:
 | | 0 | `XsjB8w30` `0` **`rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf`** |
 | | 13371337 |`XatLo2R0` `13371337` **`rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf`** |
 
+## Final note
+
+I am really happy with a migration to an address format containing both the destination account and destination tag. But it's really hard to pick one;
+
+**Existing**
+`+` Everybody knows it
+`-` Lots of mistakes
+
+**Packed**
+`+` Tech is the best, easiest for all programming languages, no double checksum
+`-` Existing address not recognizable
+
+**Appended**
+`+` Easy to spot the existing address at the start
+`-` (Beautiful and creative) Hocus pocus encoding/decoding (harder to build in all programming languages
+
+**X-Address**
+`+` Existing address recognizable at the end
+`+` 😎 Starts with an "X" so easy to communicate to users, "You can use the X format here" 
+`-` Hard to spot the existing address, Invalid alphabet with the zero (not in the ripple encoding alphabet)
+
