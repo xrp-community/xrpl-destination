@@ -1,4 +1,4 @@
-# XRPLDestination
+# XRPLDestination [![NPM](https://img.shields.io/npm/v/xrpl-destination.svg)](https://npmjs.org/package/xrpl-destination) 
 
 #### Abstract
 
