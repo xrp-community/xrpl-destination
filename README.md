@@ -96,22 +96,22 @@ I am really happy with a migration to an address format containing both the dest
 
 **Existing**
 
-`+` Everybody knows it
+`+` Everybody knows it  
 `-` Lots of mistakes
 
 **Packed**
 
-`+` Tech is the best, easiest for all programming languages, no double checksum
+`+` Tech is the best, easiest for all programming languages, no double checksum  
 `-` Existing address not recognizable
 
 **Appended**
 
-`+` Easy to spot the existing address at the start
+`+` Easy to spot the existing address at the start  
 `-` (Beautiful and creative) Hocus pocus encoding/decoding (harder to build in all programming languages
 
 **X-Address**
 
-`+` Existing address recognizable at the end
-`+` 😎 Starts with an "X" so easy to communicate to users, "You can use the X format here" 
+`+` Existing address recognizable at the end  
+`+` 😎 Starts with an "X" so easy to communicate to users, "You can use the X format here"  
 `-` Hard to spot the existing address, Invalid alphabet with the zero (not in the ripple encoding alphabet)
 
