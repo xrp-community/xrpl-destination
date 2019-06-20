@@ -79,7 +79,7 @@ The output object will always contain all encoded formats:
 | :--- | :---: | :--- |
 | **Old** | _none_ | **`rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf`** |
 | | 0 | **`rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf`** `:0` |
-| | 13371337 | **`rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf` **`:13371337` |
+| | 13371337 | **`rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf`** `:13371337` |
 | **Packed** | _none_ | `r1WTvVjuoBM9vsm2p395AyzCQcJy` `Ep8aG4YHcqE3XLDehK` |
 | | 0 | `r1WTvVjuoBM9vsm2p395AyzCQcJy` `EfcHYq9yDEBxVaZPrv` |
 | | 13371337 |`r1WTvVjuoBM9vsm2p395AyzCQcJy` `EBQKHUQVCJ6dDGbYU7` |
