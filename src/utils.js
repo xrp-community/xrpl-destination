@@ -2,6 +2,7 @@
 
 'use strict'
 
+const crypto = require('crypto')
 const {Reader: OerReader, Writer: OerWriter} = require('oer-utils')
 
 function toHex(bytes) {
@@ -22,11 +23,16 @@ function uInt32_ToUInt32LE(int) {
   return buf.toString('hex').toUpperCase()
 }
 
+function sha256(payload) {
+  return crypto.createHash('sha256').update(payload).digest()
+}
+
 module.exports = {
   toHex,
   toBytes,
   uInt32LE_ToUInt32,
   uInt32_ToUInt32LE,
   OerReader,
-  OerWriter
+  OerWriter,
+  sha256
 }
