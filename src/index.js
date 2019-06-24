@@ -22,14 +22,21 @@ class XRPLDestination {
       tag: null
     }
     this.options = {
-      network: null
+      network: null,
+      expire: null
     }
 
     /**
      * Constants
      */
 
-    this.options = Object.assign({network: 'production'}, opts || {})
+    this.options = Object.assign({
+      network: 'production',
+      expire: null
+    }, opts || {})
+
+    this.options.expire = utils.dateToInt(this.options.expire)
+
     const c = codec.codecs.ripple
     const alphabet = c.alphabet
     const utf = `^(r[${alphabet}]{24,34})[\s:]{0,1}([0-9]*)$`
@@ -112,9 +119,29 @@ class XRPLDestination {
       }
       const tagBuffer = myTagBuffer
 
-      const payload = Buffer.concat([accountID, tagBuffer, networkByte])
+      let myExpirationBuffer
+      if (this.options.expire !== undefined && this.options.expire !== null) {
+        if (Number.isInteger(this.options.expire) === false) {
+          throw new Error(`Invalid expiration: ${this.options.expire}`)
+        }
+        myExpirationBuffer = Buffer.alloc(4)
+        myExpirationBuffer.writeUInt32LE(this.options.expire, 0)
+      } else {
+        myExpirationBuffer = Buffer.alloc(0)
+      }
+      const expirationBuffer = myExpirationBuffer
+
+      const payload = Buffer.concat([
+        networkByte,
+        expirationBuffer,
+        tagBuffer,
+        accountID
+      ])
       const checksum = utils.sha256(utils.sha256(payload)).slice(0, 4)
-      const checksum_base58 = codec.encode(checksum)
+      const checksum_base58 = codec.encode(Buffer.concat([
+        checksum,
+        expirationBuffer
+      ]))
       const DELIMITER = '0'
 
       const tagString = this.untagged.tag !== undefined
@@ -195,16 +222,40 @@ class XRPLDestination {
 
     const decodeXaddress = a => {
       try {
+        // 1. Encode first character, which must be X or T
         const first = a.slice(0, 1)
         if (first !== 'X' && first !== 'T') {
           throw new Error(`Invalid first character: ${first}`)
         }
         const networkByte = Buffer.from(first)
+
+        // 2. Take everything between that character and the first
+        // '0', as the expiration and full checksum
         const delimiterPosition = a.indexOf('0')
         if (delimiterPosition === -1) {
           throw new Error(`Missing delimiter: ${a}`)
         }
-        const checksum = a.slice(1, delimiterPosition)
+        const checksumAndExpirationBase58 = a.slice(1, delimiterPosition)
+        const checksumAndExpiration = codec.decode(checksumAndExpirationBase58)
+
+        let expirationBuffer
+        let expiration
+        if (checksumAndExpiration.length === 4) {
+          // expiration is undefined
+          expirationBuffer = Buffer.alloc(0)
+          expiration = null
+        } else if (checksumAndExpiration.length === 8) {
+          expirationBuffer = Buffer.from(checksumAndExpiration.slice(4, 8))
+          expiration = expirationBuffer.readUInt32LE(0)
+        } else {
+          // Must be exactly 4 or 8 bytes
+          const l = checksumAndExpiration.length
+          throw new Error(`Invalid checksum/expiration length: ${l}`)
+        }
+
+        const checksumBuffer = checksumAndExpiration.slice(0, 4)
+
+        // 3. Take everything between that '0' and the next 'r', as the tag
         const classicAddressPosition = a.indexOf('r', delimiterPosition + 1)
         if (classicAddressPosition === -1) {
           throw new Error(`Missing classic address: ${a}`)
@@ -215,48 +266,60 @@ class XRPLDestination {
           throw new Error(`Invalid tag: ${tagString}`)
         }
 
+        // 4. The rest is the classic address
         const classicAddress = a.slice(classicAddressPosition)
-        const accountHex = utils.toHex(codec.decodeAddress(classicAddress))
-        const accountID = Buffer.from(accountHex, 'hex')
+        const decodedClassic = codec.decodeAddress(classicAddress)
+        const accountID = Buffer.from(decodedClassic, 'hex')
 
+        // 5. Convert tag to Buffer (UInt32LE)
         let myTagBuffer
         if (tag !== undefined) {
           if (Number.isInteger(tag) === false) {
             throw new Error(`Invalid tag: ${tag}`)
           }
           myTagBuffer = Buffer.alloc(8)
+          // 8 bytes = 64 bits
           myTagBuffer.writeUInt32LE(tag, 0)
         } else {
           myTagBuffer = Buffer.alloc(0)
         }
         const tagBuffer = myTagBuffer
-        const payload = Buffer.concat([accountID, tagBuffer, networkByte])
+
+        // 6. Concat networkByte, expirationBuffer, tagBuffer, and accountID
+        //    to create the payload to be checksummed.
+        //    NB: The ordering of these values has been changed from an
+        //    earlier draft of this spec.
+        const payload = Buffer.concat([
+          networkByte,
+          expirationBuffer,
+          tagBuffer,
+          accountID
+        ])
 
         // 7. SHA256 x 2 and take first 4 bytes as checksum
-        const cChecksum = utils.sha256(utils.sha256(payload)).slice(0, 4)
+        const computedChecksum = utils.sha256(utils.sha256(payload)).slice(0, 4)
 
-        // 8. Encode the checksum in base58
-        const cChecksum_base58 = codec.encode(cChecksum)
-
-        // 9. Ensure checksums match
-        if (cChecksum_base58 !== checksum) {
-          throw new Error(`Invalid checksum: ${checksum}`)
+        // 8. Ensure checksums match
+        if (computedChecksum === Buffer.from(checksumBuffer)) {
+          const hex = checksumBuffer.toString('hex').toUpperCase()
+          throw new Error(`Invalid checksum (hex): ${hex}`)
         }
 
-        // 10. Set networkID based on first character
+        // 9. Set networkID based on first character
         let networkID
         if (first === 'X') {
           networkID = 'production'
         } else if (first === 'T') {
           networkID = 'test'
         } else {
-          // Cannot happen; just to double-check (invariant)
           throw new Error(`Invalid first character: ${first}`)
+          // Cannot happen; just to double-check (invariant)
         }
 
         this.options.network = networkID
         this.tagged.xaddress = a
         this.untagged.account = classicAddress
+        this.options.expire = expiration
         this.untagged.tag = tag === '' || tag === undefined
           ? null
           : String(tag)
@@ -345,7 +408,10 @@ class XRPLDestination {
           : parseInt(this.untagged.tag, 10)
       },
       options: {
-        network: this.options.network
+        network: this.options.network,
+        expire: this.options.expire === null
+          ? null
+          : utils.intToDate(this.options.expire)
       }
     }
   }

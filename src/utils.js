@@ -27,6 +27,27 @@ function sha256(payload) {
   return crypto.createHash('sha256').update(payload).digest()
 }
 
+function dateToInt(date) {
+  const isDate = typeof date === 'object'
+    && date !== null &&
+    date.constructor === Date
+  const isString = typeof date === 'string'
+  if (isDate || isString) {
+    return Math.round(Date.parse(date) / 1000) - 0x386D4380
+  }
+  return null
+}
+
+function intToDate(int) {
+  if (typeof int === 'number' || typeof int === 'string') {
+    const rippledTimestamp = parseInt(int, 10)
+    if (!isNaN(rippledTimestamp)) {
+      return new Date((rippledTimestamp + 0x386D4380) * 1000)
+    }
+  }
+  return null
+}
+
 module.exports = {
   toHex,
   toBytes,
@@ -34,5 +55,7 @@ module.exports = {
   uInt32_ToUInt32LE,
   OerReader,
   OerWriter,
-  sha256
+  sha256,
+  dateToInt,
+  intToDate
 }
