@@ -1,6 +1,6 @@
 {
   "name": "xrpl-destination",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Encodes/Decodes base58 decoded/encoded Ripple account addresses from/to tagged adddresses",
   "main": "src/index.js",
   "license": "MIT",
