@@ -43,12 +43,16 @@ Or of course one of the encoded formats:
 const addresses = new XRPLDestination('rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpfTbxXR2tgs')
 ```
 
-Optionally a second argument containing an options object with a `network` (`production` or `test`) can be supplied, since the proposed _X-Address format_ uses a `P` or `T` prefix to differentiate between accounts on livenet (production) or testnet (test):
+For the **proposed _X-Address format_**, optionally a second argument containing an options object can be supplied. This format supports a network prefix, `P` or `T`, to differentiate between accounts on livenet (production) or testnet (test) and an optional expiration can be supplied:
 
 ```javacsript
-const opts = {network: 'test'}
+// const opts = {network: 'test', expire: null}
+// or
+const opts = {network: 'test', expire: '2019-12-31 23:59:59Z'}
 const addresses = new XRPLDestination('rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpfTbxXR2tgs', opts)
 ```
+
+The expiration (`expire`) can be entered as a date+time string (will be parsed with `Date.parse()`) or as a Date object.
 
 The output object will always contain all encoded formats:
 
@@ -64,13 +68,14 @@ The output object will always contain all encoded formats:
     "tag": 13371337
   },
   "options": {
-    "network": "production"
+    "network": "production",
+    "expire": null
   }
 }
 
 ```
 
-`untagged.tag` will either be `null` or an unsigned 32 bit integer.
+`untagged.tag` will either be `null` or an unsigned 32 bit integer. `options.expire` will be null or an international date+time string, eg. `"2019-12-31T23:59:59.000Z"`.
 
 
 ## Format samples
@@ -80,15 +85,15 @@ The output object will always contain all encoded formats:
 | **Old** | _none_ | **`rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf`** |
 | | 0 | **`rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf`** `:0` |
 | | 13371337 | **`rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf`** `:13371337` |
-| **Packed** | _none_ | `r1WTvVjuoBM9vsm2p395AyzCQcJy` `Ep8aG4YHcqE3XLDehK` |
-| | 0 | `r1WTvVjuoBM9vsm2p395AyzCQcJy` `EfcHYq9yDEBxVaZPrv` |
-| | 13371337 |`r1WTvVjuoBM9vsm2p395AyzCQcJy` `EBQKHUQVCJ6dDGbYU7` |
-| **Appended** | _none_ | **`rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf`** `TbxXR2tgs` |
-| | 0 | **`rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf`** `RaqV96w6Bi` |
-| | 13371337 | **`rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf`** `7vSBPCZR1h1tmgqHTkEp` |
-| **X-Address** | _none_ | `XfHcYHS0` **`rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf`** |
-| | 0 | `XsjB8w30` `0` **`rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf`** |
-| | 13371337 |`XatLo2R0` `13371337` **`rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf`** |
+| **Packed** | _none_ | `r1WTvVjuoBM9vsm2p395AyzCQcJy` `...` |
+| | 0 | `r1WTvVjuoBM9vsm2p395AyzCQcJy` `...` |
+| | 13371337 |`r1WTvVjuoBM9vsm2p395AyzCQcJy` `...` |
+| **Appended** | _none_ | **`rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf`** `...` |
+| | 0 | **`rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf`** `...` |
+| | 13371337 | **`rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf`** `...` |
+| **X-Address** | _none_ | `X...` **`rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf`** |
+| | 0 | `X...` `0` **`rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf`** |
+| | 13371337 |`X...` `13371337` **`rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf`** |
 
 ## Final note
 
@@ -112,6 +117,8 @@ I am really happy with a migration to an address format containing both the dest
 **X-Address**
 
 `+` Existing address recognizable at the end  
-`+` 😎 Starts with an "X" so easy to communicate to users, "You can use the X format here"  
+`+` Starts with an "X" so easy to communicate to users, "You can use the X format here"  
 `-` Hard to spot the existing address, Invalid alphabet with the zero (not in the ripple encoding alphabet)
+`-` Breaking change with the base58 Ripple alphabet (added zero)
+`-` Another round of sha256 encoding
 
