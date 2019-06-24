@@ -1,4 +1,4 @@
-# XRPL-Destination
+# XRPLDestination [![NPM](https://img.shields.io/npm/v/xrpl-destination.svg)](https://npmjs.org/package/xrpl-destination) 
 
 #### Abstract
 
@@ -78,15 +78,40 @@ The output object will always contain all encoded formats:
 | Format | Tag | Encoded |
 | :--- | :---: | :--- |
 | **Old** | _none_ | **`rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf`** |
-| | 0 | **`rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf`**`:0` |
-| | 13371337 | **`rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf`**`:13371337` |
-| **Packed** | _none_ | `r1WTvVjuoBM9vsm2p395AyzCQcJy``Ep8aG4YHcqE3XLDehK` |
-| | 0 | `r1WTvVjuoBM9vsm2p395AyzCQcJy``EfcHYq9yDEBxVaZPrv` |
-| | 13371337 |`r1WTvVjuoBM9vsm2p395AyzCQcJy``EBQKHUQVCJ6dDGbYU7` |
-| **Appended** | _none_ | **`rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf`**`TbxXR2tgs` |
-| | 0 | **`rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf`**`RaqV96w6Bi` |
-| | 13371337 | **`rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf`**`7vSBPCZR1h1tmgqHTkEp` |
-| **X-Address** | _none_ | `XfHcYHS0`**`rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf`** |
-| | 0 | `XsjB8w30``0`**`rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf`** |
-| | 13371337 |`XatLo2R0``13371337`**`rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf`** |
+| | 0 | **`rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf`** `:0` |
+| | 13371337 | **`rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf`** `:13371337` |
+| **Packed** | _none_ | `r1WTvVjuoBM9vsm2p395AyzCQcJy` `Ep8aG4YHcqE3XLDehK` |
+| | 0 | `r1WTvVjuoBM9vsm2p395AyzCQcJy` `EfcHYq9yDEBxVaZPrv` |
+| | 13371337 |`r1WTvVjuoBM9vsm2p395AyzCQcJy` `EBQKHUQVCJ6dDGbYU7` |
+| **Appended** | _none_ | **`rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf`** `TbxXR2tgs` |
+| | 0 | **`rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf`** `RaqV96w6Bi` |
+| | 13371337 | **`rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf`** `7vSBPCZR1h1tmgqHTkEp` |
+| **X-Address** | _none_ | `XfHcYHS0` **`rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf`** |
+| | 0 | `XsjB8w30` `0` **`rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf`** |
+| | 13371337 |`XatLo2R0` `13371337` **`rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf`** |
+
+## Final note
+
+I am really happy with a migration to an address format containing both the destination account and destination tag. But it's really hard to pick one;
+
+**Existing**
+
+`+` Everybody knows it  
+`-` Lots of mistakes
+
+**Packed**
+
+`+` Tech is the best, easiest for all programming languages, no double checksum  
+`-` Existing address not recognizable
+
+**Appended**
+
+`+` Easy to spot the existing address at the start  
+`-` (Beautiful and creative) Hocus pocus encoding/decoding (harder to build in all programming languages
+
+**X-Address**
+
+`+` Existing address recognizable at the end  
+`+` 😎 Starts with an "X" so easy to communicate to users, "You can use the X format here"  
+`-` Hard to spot the existing address, Invalid alphabet with the zero (not in the ripple encoding alphabet)
 
