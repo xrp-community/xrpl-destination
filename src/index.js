@@ -200,10 +200,10 @@ class XRPLDestination {
     const decodeAppended = a => {
       try {
         const decoded = c.decodeChecked(a).reverse()
-        const reader = new utils.OerReader(new Buffer(decoded))
+        const reader = new utils.OerReader(Buffer.from(decoded))
         const result = {
           address: a.slice(0, reader.readUInt8Number()),
-          tag: new Buffer(reader.readVarOctetString()).toString('utf8')
+          tag: Buffer.from(reader.readVarOctetString()).toString('utf8')
         }
         const valid = codec.isValidAddress(result.address)
         if (typeof result.address === 'string' && valid) {
