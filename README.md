@@ -1,3 +1,7 @@
+# DEPRECATED, MOVED TO https://www.npmjs.com/xrpl-tagged-address-codec / https://github.com/xrp-community/xrpl-tagged-address-codec
+
+---
+
 # XRPLDestination [![NPM](https://img.shields.io/npm/v/xrpl-destination.svg)](https://npmjs.org/package/xrpl-destination) 
 
 #### Abstract
